@@ -47,8 +47,14 @@ class CheckerDetector {
         }
 
         try {
-            // Read video frame to matrix
-            this.srcMat = cv.imread(this.video);
+            // Clear canvas first
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            // Draw current video frame to canvas
+            this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+            
+            // Read canvas to matrix
+            this.srcMat = cv.imread(this.canvas);
 
             // Convert to grayscale
             cv.cvtColor(this.srcMat, this.grayMat, cv.COLOR_RGBA2GRAY);

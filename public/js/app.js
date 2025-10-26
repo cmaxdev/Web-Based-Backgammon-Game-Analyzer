@@ -159,7 +159,7 @@ async function logDetections(detections) {
     if (detections.length === 0) return;
     
     try {
-        const response = await fetch('../php/save_move.php', {
+        const response = await fetch('/php/save_move.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
