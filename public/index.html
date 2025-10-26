@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Backgammon Checker Detector</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Backgammon Checker Detector</h1>
+            <p class="subtitle">Real-time checker detection</p>
+        </header>
+
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+            <div class="overlay-info" id="overlayInfo">
+                <span id="detectionCount">Detections: 0</span>
+                <span id="status">Initializing...</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="startBtn" class="btn btn-primary">Start Detection</button>
+            <button id="stopBtn" class="btn btn-secondary" disabled>Stop Detection</button>
+        </div>
+
+        <div class="info-panel">
+            <h3>Detection Info</h3>
+            <div id="infoContent">
+                <p>Press "Start Detection" to begin analyzing the backgammon board.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- OpenCV.js CDN -->
+    <script src="https://docs.opencv.org/4.x/opencv.js"></script>
+    
+    <!-- Custom scripts -->
+    <script src="../js/detector.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>
+

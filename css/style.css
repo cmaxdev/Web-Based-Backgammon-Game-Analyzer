@@ -1,0 +1,225 @@
+/**
+ * Mobile-first responsive styles for Backgammon Checker Detector
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+header {
+    text-align: center;
+    color: white;
+    padding: 20px 10px;
+}
+
+header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Camera container with video and canvas overlay */
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    margin: 15px 0;
+}
+
+.camera-container video,
+.camera-container canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform: scaleX(-1); /* Mirror image for natural feel */
+}
+
+.camera-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+/* Overlay info box */
+.overlay-info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+}
+
+#detectionCount {
+    font-weight: bold;
+    color: #4caf50;
+}
+
+#status {
+    color: #ffa726;
+}
+
+/* Control buttons */
+.controls {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-primary:active:not(:disabled) {
+    background: #45a049;
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background: #f44336;
+    color: white;
+}
+
+.btn-secondary:active:not(:disabled) {
+    background: #da190b;
+    transform: scale(0.98);
+}
+
+/* Info panel */
+.info-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-panel h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #667eea;
+}
+
+.info-panel p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+}
+
+.info-panel ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.info-panel li {
+    font-size: 13px;
+    margin: 5px 0;
+    color: #333;
+}
+
+/* Mobile optimization */
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 20px;
+    }
+
+    .overlay-info {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 12px 20px;
+    }
+}
+
+/* Landscape orientation */
+@media (orientation: landscape) {
+    .container {
+        padding: 5px;
+    }
+
+    header {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 18px;
+    }
+
+    .camera-container {
+        margin: 10px 0;
+    }
+
+    .info-panel {
+        margin-top: 10px;
+        padding: 15px;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .info-panel {
+        background: #2d2d2d;
+        color: #e0e0e0;
+    }
+
+    .info-panel h3 {
+        color: #764ba2;
+    }
+}
+

@@ -1,0 +1,14 @@
+# PHP log files
+php/moves.txt
+
+# Keep directory structure
+!php/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+
