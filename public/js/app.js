@@ -88,6 +88,9 @@ async function startDetection() {
  * Stop camera and detection
  */
 function stopDetection() {
+    // Set flag first to prevent any in-flight detections from continuing
+    isDetecting = false;
+    
     // Stop detection loop
     if (detectionInterval) {
         clearInterval(detectionInterval);
@@ -101,7 +104,6 @@ function stopDetection() {
         videoElement.srcObject = null;
     }
     
-    isDetecting = false;
     updateStatus('Stopped');
     
     // Update button states
@@ -114,23 +116,30 @@ function stopDetection() {
 }
 
 /**
- * Run checker detection on current frame
+ * Run game state detection on current frame
  */
 function detectCheckers() {
     if (!isDetecting || !detectorInstance) return;
     
     try {
-        const detections = detectorInstance.detect();
+        const gameState = detectorInstance.detect();
         
-        if (detections && detections.length > 0) {
+        if (gameState) {
+            // Count total detections
+            const totalDetections = 
+                (gameState.checkers?.length || 0) + 
+                (gameState.dice?.red ? 1 : 0) + 
+                (gameState.dice?.white ? 1 : 0) + 
+                (gameState.cube?.x ? 1 : 0);
+            
             // Update UI with detection count
-            detectionCountElement.textContent = `Detections: ${detections.length}`;
+            detectionCountElement.textContent = `Detections: ${totalDetections}`;
             
             // Log detections to info panel
-            updateInfoPanel(detections);
+            updateInfoPanel(gameState);
             
-            // Send detections to PHP backend
-            logDetections(detections);
+            // Send game state to PHP backend
+            logGameState(gameState);
         }
     } catch (error) {
         console.error('Detection error:', error);
@@ -138,25 +147,39 @@ function detectCheckers() {
 }
 
 /**
- * Update the info panel with recent detections
+ * Update the info panel with game state information
  */
-function updateInfoPanel(detections) {
-    if (detections.length === 0) return;
+function updateInfoPanel(gameState) {
+    let html = '<p><strong>Current Game State:</strong></p><ul>';
     
-    let html = '<p><strong>Recent Detections:</strong></p><ul>';
-    detections.slice(-5).forEach((det, idx) => {
-        html += `<li>Checker ${idx + 1}: (${Math.round(det.x)}, ${Math.round(det.y)})</li>`;
-    });
+    // Checkers
+    html += `<li>Checkers: ${gameState.checkers?.length || 0} detected</li>`;
+    
+    // Dice
+    if (gameState.dice) {
+        if (gameState.dice.red) {
+            html += `<li>Red Die: ${gameState.dice.red.pips || '?'} pips</li>`;
+        }
+        if (gameState.dice.white) {
+            html += `<li>White Die: ${gameState.dice.white.pips || '?'} pips</li>`;
+        }
+    }
+    
+    // Doubling Cube
+    if (gameState.cube && gameState.cube.x) {
+        html += `<li>Doubling Cube: Detected</li>`;
+    }
+    
     html += '</ul>';
     
     infoContent.innerHTML = html;
 }
 
 /**
- * Send detections to PHP backend for logging
+ * Send complete game state to PHP backend for logging
  */
-async function logDetections(detections) {
-    if (detections.length === 0) return;
+async function logGameState(gameState) {
+    if (!gameState || !isDetecting) return;
     
     try {
         const response = await fetch('/php/save_move.php', {
@@ -165,16 +188,19 @@ async function logDetections(detections) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                detections: detections,
+                gameState: gameState,
                 timestamp: new Date().toISOString()
             })
         });
         
         if (!response.ok) {
-            console.warn('Failed to log detection to server');
+            console.warn('Failed to log game state to server');
         }
     } catch (error) {
-        console.error('Error logging detection:', error);
+        // Silently ignore fetch errors when stopped
+        if (isDetecting) {
+            console.error('Error logging game state:', error);
+        }
     }
 }
 

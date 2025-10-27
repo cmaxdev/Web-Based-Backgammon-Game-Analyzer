@@ -1,7 +1,7 @@
 <?php
 /**
- * Backend PHP script to log checker detections to moves.txt
- * Handles POST requests with JSON data
+ * Backend PHP script to log complete game state to moves.txt
+ * Handles POST requests with JSON data for checkers, dice, doubling cube, etc.
  */
 
 // Set headers for JSON response
@@ -24,7 +24,7 @@ $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
 // Validate input
-if (!$data || !isset($data['detections']) || !isset($data['timestamp'])) {
+if (!$data || !isset($data['gameState']) || !isset($data['timestamp'])) {
     http_response_code(400);
     echo json_encode(['error' => 'Invalid data format']);
     exit;
@@ -42,17 +42,47 @@ try {
     // Format timestamp
     $timestamp = date('Y-m-d H:i:s');
     
-    // Process detections
-    $detections = $data['detections'];
+    // Process complete game state
+    $gameState = $data['gameState'];
     $logEntries = [];
 
-    foreach ($detections as $detection) {
-        // Format: [timestamp] Checker detected at position (x:x, y:y)
-        $x = isset($detection['x']) ? round($detection['x']) : 0;
-        $y = isset($detection['y']) ? round($detection['y']) : 0;
-        
-        $logEntries[] = "[{$timestamp}] Checker detected at position (x:{$x}, y:{$y})\n";
+    // Log checkers
+    if (isset($gameState['checkers']) && is_array($gameState['checkers'])) {
+        $logEntries[] = "[{$timestamp}] === CHECKERS === (" . count($gameState['checkers']) . " found)\n";
+        foreach ($gameState['checkers'] as $checker) {
+            $x = isset($checker['x']) ? round($checker['x']) : 0;
+            $y = isset($checker['y']) ? round($checker['y']) : 0;
+            $logEntries[] = "  - Checker at position (x:{$x}, y:{$y})\n";
+        }
     }
+    
+    // Log dice
+    if (isset($gameState['dice'])) {
+        $logEntries[] = "[{$timestamp}] === DICE ===\n";
+        if (isset($gameState['dice']['red'])) {
+            $x = round($gameState['dice']['red']['x']);
+            $y = round($gameState['dice']['red']['y']);
+            $pips = $gameState['dice']['red']['pips'] ?? '?';
+            $logEntries[] = "  - Red Die: {$pips} pips at (x:{$x}, y:{$y})\n";
+        }
+        if (isset($gameState['dice']['white'])) {
+            $x = round($gameState['dice']['white']['x']);
+            $y = round($gameState['dice']['white']['y']);
+            $pips = $gameState['dice']['white']['pips'] ?? '?';
+            $logEntries[] = "  - White Die: {$pips} pips at (x:{$x}, y:{$y})\n";
+        }
+    }
+    
+    // Log doubling cube
+    if (isset($gameState['cube']) && isset($gameState['cube']['x'])) {
+        $logEntries[] = "[{$timestamp}] === DOUBLING CUBE ===\n";
+        $x = round($gameState['cube']['x']);
+        $y = round($gameState['cube']['y']);
+        $value = $gameState['cube']['value'] ?? '?';
+        $logEntries[] = "  - Cube at (x:{$x}, y:{$y}), value: {$value}\n";
+    }
+    
+    $logEntries[] = "\n"; // Empty line for readability
 
     // Append to file
     $success = false;
